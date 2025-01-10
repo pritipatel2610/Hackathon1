@@ -7,6 +7,8 @@ import com.repository.LanguageRepository;
 import com.repository.RoleRepository;
 import com.repository.UserRepository;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,33 +37,38 @@ public class AuthController {
         model.addAttribute("languages", languageRepository.findAll());
         model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("courses", courseRepository.findAll());
+       
         return "Signup";
     }
 
     @PostMapping("/signup")
     public String registerUser(
             @ModelAttribute UserEntity user,
-            @RequestParam(value = "languageIds", required = false) List<Integer> languageIds
-, // Accept language IDs from form
+            @RequestParam(value = "languageIds", required = false) List<Integer> languageIds,
             Model model) {
+
         // Check for existing email
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             model.addAttribute("error", "Email already exists!");
             return "Signup";
         }
 
-        // Retrieve selected languages
-        List<LanguageEntity> selectedLanguages = languageRepository.findAllById(languageIds);
-        // Convert the list to a comma-separated string for storage
-        String languageNames = selectedLanguages.stream()
-                .map(LanguageEntity::getLanguage)
-                .reduce((a, b) -> a + "," + b)
-                .orElse("");
+        // Handle null or empty languageIds
+        String languageNames = "";
+        if (languageIds != null && !languageIds.isEmpty()) {
+            List<LanguageEntity> selectedLanguages = languageRepository.findAllById(languageIds);
+            languageNames = selectedLanguages.stream()
+                    .map(LanguageEntity::getLanguage)
+                    .reduce((a, b) -> a + "," + b)
+                    .orElse("");
+        }
 
         // Set languages to the user
         user.setLanguageKnown(languageNames);
+
+        // Set default role if not provided
         if (user.getRoleId() == null) {
-            user.setRoleId(2); // Set to the default "Student" role ID.
+            user.setRoleId(2); // Default "Student" role ID
         }
 
         // Save the user
@@ -69,5 +76,25 @@ public class AuthController {
 
         model.addAttribute("message", "Registration successful!");
         return "Login";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "Login";
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElse(null);
+
+        if (user != null && user.getPassword().equals(password)) {
+            model.addAttribute("user", user);
+            session.setAttribute("user", user);
+            return "Dashboard";
+        } else {
+            model.addAttribute("error", "Invalid email or password!");
+            return "Login";
+        }
     }
 }

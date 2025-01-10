@@ -45,26 +45,34 @@ public class TeamController {
 			Model model, HttpSession session) {
 		 
 		UserEntity user = (UserEntity) session.getAttribute("user");
+		
 		HackathonEntity selectedHackathon = hackathonRepository.findById(hackathonId).orElse(null);
 
 		Optional<TeamEntity> optaionalTeam = teamRepository.findByUserAndHackathon(user, selectedHackathon);
+		
 		model.addAttribute("teamName",teamName);
-		if (optaionalTeam.isPresent()) {
+		
+		if (optaionalTeam.isPresent()) 
+		{
 			model.addAttribute("error", "Team Already Created For Selected Hackathon");
+			
 			List<HackathonEntity> hackathons = hackathonRepository.findAll();
 
 			// Add the hackathons list to the model so it can be accessed in the JSP
 			model.addAttribute("hackathons", hackathons);
+			
 			return "CreateTeam";
 		}
 		optaionalTeam = teamRepository.findByTeamName(teamName);
 		
 		if (optaionalTeam.isPresent()) {
 			model.addAttribute("error", "Team Name Already Taken By Other Team");
+			
 			List<HackathonEntity> hackathons = hackathonRepository.findAll();
 
 			// Add the hackathons list to the model so it can be accessed in the JSP
 			model.addAttribute("hackathons", hackathons);
+			
 			return "CreateTeam";
 		}
 		// Create and save the new team

@@ -39,7 +39,7 @@ public class HackathonParticipationEntity {
     @NotNull
     private LocalDate registrationDate;
 
-    @NotNull  // Ensure the paymentStatus cannot be null
+    @NotNull // Ensure the paymentStatus cannot be null
     private PaymentStatus paymentStatus;
     	public enum PaymentStatus {
     		 PAID,

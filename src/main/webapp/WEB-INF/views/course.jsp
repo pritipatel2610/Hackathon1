@@ -71,6 +71,15 @@
                 </c:forEach>
             </tbody>
         </table>
+       
+        <!-- Footer Text -->
+        <div class="footer-text mt-4">
+            <p>Need help? <a href="#">Contact Support</a></p>
+        </div>
     </div>
+
+    <!-- Bootstrap JS (optional, for future enhancements like tooltips or modal) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
