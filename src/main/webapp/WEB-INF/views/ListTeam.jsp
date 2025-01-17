@@ -25,6 +25,11 @@
                         <td>${team.user.firstName}</td>
                         <td>
                             <a href="/teams/addMember/${team.teamId}" class="btn btn-primary">Add Member</a>
+                            
+                          <a href="/teams/viewMembers/${team.teamId}" class="btn btn-info">View Members</a>
+
+                            
+                        </td>
                         </td>
                     </tr>
                 </c:forEach>
